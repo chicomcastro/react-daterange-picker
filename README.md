@@ -84,6 +84,14 @@ interface DefinedRange {
     startDate: Date,
     endDate: Date
 }
+
+interface Translation {
+    startDate?: string;
+    endDate?: string;
+    months?: [string, string, string, string, string, string, string, string, string, string, string, string];
+    weekDays?: [string, string, string, string, string, string, string];
+    locale?: object;
+}
 ```
 
 ## Props
@@ -95,4 +103,5 @@ Name | Type | Required | Default value | Description
 `maxDate` | `Date | string` | | 10 years from now | max date allowed in range
 `onChange` | `(DateRange) => void` | _required_ | - | handler function for providing selected date range
 `definedRanges` | `DefinedRange[]` | | - | custom defined ranges to show in the list
+`translation` | `Translation` | | - | custom defined translations and locale
 
