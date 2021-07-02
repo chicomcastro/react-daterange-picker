@@ -1,7 +1,7 @@
 import React from "react";
-import { WithStyles, Theme } from "@material-ui/core";
+import { WithStyles, Theme } from '@material-ui/core/styles';
 import { DateRange, DefinedRange, Setter, NavigationAction } from "../types";
-declare const styles: (theme: Theme) => Record<"header" | "headerItem" | "divider", import("@material-ui/styles").CSSProperties | import("@material-ui/styles").CreateCSSProperties<{}> | ((props: {}) => import("@material-ui/styles").CreateCSSProperties<{}>)>;
+declare const styles: (theme: Theme) => Record<"header" | "headerItem" | "divider", import("@material-ui/styles").CSSProperties | import("@material-ui/styles").CreateCSSProperties<{}> | import("@material-ui/styles").PropsFunc<{}, import("@material-ui/styles").CreateCSSProperties<{}>>>;
 interface MenuProps extends WithStyles<typeof styles> {
     dateRange: DateRange;
     ranges: DefinedRange[];
@@ -26,6 +26,7 @@ interface MenuProps extends WithStyles<typeof styles> {
         months?: [string, string, string, string, string, string, string, string, string, string, string, string];
         weekDays?: [string, string, string, string, string, string, string];
         locale?: object;
+        dateFormat?: string;
     };
 }
 declare const _default: React.ComponentType<Pick<React.PropsWithChildren<MenuProps>, "dateRange" | "ranges" | "minDate" | "maxDate" | "firstMonth" | "secondMonth" | "setFirstMonth" | "setSecondMonth" | "setDateRange" | "helpers" | "handlers" | "translation" | "children"> & import("@material-ui/core").StyledComponentProps<"header" | "headerItem" | "divider">>;

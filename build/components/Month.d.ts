@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Theme, WithStyles } from "@material-ui/core";
 import { NavigationAction, DateRange } from "../types";
-declare const styles: (_: Theme) => Record<"root" | "weekDaysContainer" | "daysContainer", import("@material-ui/styles").CSSProperties | import("@material-ui/styles").CreateCSSProperties<{}> | ((props: {}) => import("@material-ui/styles").CreateCSSProperties<{}>)>;
+declare const styles: (_: Theme) => Record<"root" | "weekDaysContainer" | "daysContainer", import("@material-ui/styles").CSSProperties | import("@material-ui/styles").CreateCSSProperties<{}> | import("@material-ui/styles").PropsFunc<{}, import("@material-ui/styles").CreateCSSProperties<{}>>>;
 interface MonthProps extends WithStyles<typeof styles> {
     value: Date;
     marker: symbol;

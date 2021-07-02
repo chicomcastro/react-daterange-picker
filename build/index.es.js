@@ -1,22 +1,23 @@
 import React__default, { createElement, useState } from 'react';
-import { createStyles, withStyles, Grid, IconButton, Select, MenuItem, makeStyles, Typography, Paper, List, ListItem, ListItemText, Divider } from '@material-ui/core';
+import { Grid, IconButton, Select, MenuItem, Typography, withStyles as withStyles$1, createStyles as createStyles$1, Paper, List, ListItem, ListItemText, Divider } from '@material-ui/core';
+import { createStyles, withStyles, makeStyles } from '@material-ui/core/styles';
 import ArrowRightAlt from '@material-ui/icons/ArrowRightAlt';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 
 /*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
+Copyright (c) Microsoft Corporation.
 
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
 
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 
 var __assign = function() {
@@ -46,7 +47,7 @@ function toInteger(dirtyNumber) {
 
 function requiredArgs(required, args) {
   if (args.length < required) {
-    throw new TypeError(required + ' argument' + required > 1 ? 's' : '' + ' required, but only ' + args.length + ' present');
+    throw new TypeError(required + ' argument' + (required > 1 ? 's' : '') + ' required, but only ' + args.length + ' present');
   }
 }
 
@@ -93,7 +94,7 @@ function toDate(argument) {
   } else {
     if ((typeof argument === 'string' || argStr === '[object String]') && typeof console !== 'undefined') {
       // eslint-disable-next-line no-console
-      console.warn("Starting with v2.0.0-beta.1 date-fns doesn't accept strings as arguments. Please use `parseISO` to parse strings. See: https://git.io/fjule"); // eslint-disable-next-line no-console
+      console.warn("Starting with v2.0.0-beta.1 date-fns doesn't accept strings as date arguments. Please use `parseISO` to parse strings. See: https://git.io/fjule"); // eslint-disable-next-line no-console
 
       console.warn(new Error().stack);
     }
@@ -116,12 +117,12 @@ function toDate(argument) {
  *
  * @param {Date|Number} date - the date to be changed
  * @param {Number} amount - the amount of days to be added. Positive decimals will be rounded using `Math.floor`, decimals less than zero will be rounded using `Math.ceil`.
- * @returns {Date} the new date with the days added
- * @throws {TypeError} 2 arguments required
+ * @returns {Date} - the new date with the days added
+ * @throws {TypeError} - 2 arguments required
  *
  * @example
  * // Add 10 days to 1 September 2014:
- * var result = addDays(new Date(2014, 8, 1), 10)
+ * const result = addDays(new Date(2014, 8, 1), 10)
  * //=> Thu Sep 11 2014 00:00:00
  */
 
@@ -129,41 +130,18 @@ function addDays(dirtyDate, dirtyAmount) {
   requiredArgs(2, arguments);
   var date = toDate(dirtyDate);
   var amount = toInteger(dirtyAmount);
+
+  if (isNaN(amount)) {
+    return new Date(NaN);
+  }
+
+  if (!amount) {
+    // If 0 days, no-op to avoid changing times in the hour before end of DST
+    return date;
+  }
+
   date.setDate(date.getDate() + amount);
   return date;
-}
-
-/**
- * @name getDaysInMonth
- * @category Month Helpers
- * @summary Get the number of days in a month of the given date.
- *
- * @description
- * Get the number of days in a month of the given date.
- *
- * ### v2.0.0 breaking changes:
- *
- * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
- *
- * @param {Date|Number} date - the given date
- * @returns {Number} the number of days in a month
- * @throws {TypeError} 1 argument required
- *
- * @example
- * // How many days are in February 2000?
- * var result = getDaysInMonth(new Date(2000, 1))
- * //=> 29
- */
-
-function getDaysInMonth(dirtyDate) {
-  requiredArgs(1, arguments);
-  var date = toDate(dirtyDate);
-  var year = date.getFullYear();
-  var monthIndex = date.getMonth();
-  var lastDayOfMonth = new Date(0);
-  lastDayOfMonth.setFullYear(year, monthIndex + 1, 0);
-  lastDayOfMonth.setHours(0, 0, 0, 0);
-  return lastDayOfMonth.getDate();
 }
 
 /**
@@ -185,7 +163,7 @@ function getDaysInMonth(dirtyDate) {
  *
  * @example
  * // Add 5 months to 1 September 2014:
- * var result = addMonths(new Date(2014, 8, 1), 5)
+ * const result = addMonths(new Date(2014, 8, 1), 5)
  * //=> Sun Feb 01 2015 00:00:00
  */
 
@@ -193,15 +171,44 @@ function addMonths(dirtyDate, dirtyAmount) {
   requiredArgs(2, arguments);
   var date = toDate(dirtyDate);
   var amount = toInteger(dirtyAmount);
-  var desiredMonth = date.getMonth() + amount;
-  var dateWithDesiredMonth = new Date(0);
-  dateWithDesiredMonth.setFullYear(date.getFullYear(), desiredMonth, 1);
-  dateWithDesiredMonth.setHours(0, 0, 0, 0);
-  var daysInMonth = getDaysInMonth(dateWithDesiredMonth); // Set the last day of the new month
-  // if the original date was the last day of the longer month
 
-  date.setMonth(desiredMonth, Math.min(daysInMonth, date.getDate()));
-  return date;
+  if (isNaN(amount)) {
+    return new Date(NaN);
+  }
+
+  if (!amount) {
+    // If 0 months, no-op to avoid changing times in the hour before end of DST
+    return date;
+  }
+
+  var dayOfMonth = date.getDate(); // The JS Date object supports date math by accepting out-of-bounds values for
+  // month, day, etc. For example, new Date(2020, 0, 0) returns 31 Dec 2019 and
+  // new Date(2020, 13, 1) returns 1 Feb 2021.  This is *almost* the behavior we
+  // want except that dates will wrap around the end of a month, meaning that
+  // new Date(2020, 13, 31) will return 3 Mar 2021 not 28 Feb 2021 as desired. So
+  // we'll default to the end of the desired month by adding 1 to the desired
+  // month and using a date of 0 to back up one day to the end of the desired
+  // month.
+
+  var endOfDesiredMonth = new Date(date.getTime());
+  endOfDesiredMonth.setMonth(date.getMonth() + amount + 1, 0);
+  var daysInMonth = endOfDesiredMonth.getDate();
+
+  if (dayOfMonth >= daysInMonth) {
+    // If we're already at the end of the month, then this is the correct date
+    // and we're done.
+    return endOfDesiredMonth;
+  } else {
+    // Otherwise, we now know that setting the original day-of-month value won't
+    // cause an overflow, so set the desired day-of-month. Note that we can't
+    // just set the date of `endOfDesiredMonth` because that object may have had
+    // its time changed in the unusual case where where a DST transition was on
+    // the last day of the month and its local time was in the hour skipped or
+    // repeated next to a DST transition.  So we use `date` instead which is
+    // guaranteed to still have the original time.
+    date.setFullYear(endOfDesiredMonth.getFullYear(), endOfDesiredMonth.getMonth(), dayOfMonth);
+    return date;
+  }
 }
 
 /**
@@ -223,7 +230,7 @@ function addMonths(dirtyDate, dirtyAmount) {
  *
  * @example
  * // Add 750 milliseconds to 10 July 2014 12:45:30.000:
- * var result = addMilliseconds(new Date(2014, 6, 10, 12, 45, 30, 0), 750)
+ * const result = addMilliseconds(new Date(2014, 6, 10, 12, 45, 30, 0), 750)
  * //=> Thu Jul 10 2014 12:45:30.750
  */
 
@@ -257,12 +264,12 @@ function addMilliseconds(dirtyDate, dirtyAmount) {
  *
  * @example
  * // The start of a week for 2 September 2014 11:55:00:
- * var result = startOfWeek(new Date(2014, 8, 2, 11, 55, 0))
+ * const result = startOfWeek(new Date(2014, 8, 2, 11, 55, 0))
  * //=> Sun Aug 31 2014 00:00:00
  *
  * @example
  * // If the week starts on Monday, the start of the week for 2 September 2014 11:55:00:
- * var result = startOfWeek(new Date(2014, 8, 2, 11, 55, 0), { weekStartsOn: 1 })
+ * const result = startOfWeek(new Date(2014, 8, 2, 11, 55, 0), { weekStartsOn: 1 })
  * //=> Mon Sep 01 2014 00:00:00
  */
 
@@ -286,7 +293,6 @@ function startOfWeek(dirtyDate, dirtyOptions) {
   return date;
 }
 
-var MILLISECONDS_IN_MINUTE = 60000;
 /**
  * Google Chrome as of 67.0.3396.87 introduced timezones with offset that includes seconds.
  * They usually appear for dates that denote time before the timezones were introduced
@@ -298,13 +304,10 @@ var MILLISECONDS_IN_MINUTE = 60000;
  *
  * This function returns the timezone offset in milliseconds that takes seconds in account.
  */
-
-function getTimezoneOffsetInMilliseconds(dirtyDate) {
-  var date = new Date(dirtyDate.getTime());
-  var baseTimezoneOffset = Math.ceil(date.getTimezoneOffset());
-  date.setSeconds(0, 0);
-  var millisecondsPartOfTimezoneOffset = date.getTime() % MILLISECONDS_IN_MINUTE;
-  return baseTimezoneOffset * MILLISECONDS_IN_MINUTE + millisecondsPartOfTimezoneOffset;
+function getTimezoneOffsetInMilliseconds(date) {
+  var utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
+  utcDate.setUTCFullYear(date.getFullYear());
+  return date.getTime() - utcDate.getTime();
 }
 
 /**
@@ -326,7 +329,7 @@ function getTimezoneOffsetInMilliseconds(dirtyDate) {
  *
  * @example
  * // The start of a day for 2 September 2014 11:55:00:
- * var result = startOfDay(new Date(2014, 8, 2, 11, 55, 0))
+ * const result = startOfDay(new Date(2014, 8, 2, 11, 55, 0))
  * //=> Tue Sep 02 2014 00:00:00
  */
 
@@ -356,7 +359,7 @@ function startOfDay(dirtyDate) {
  *
  * @example
  * // Add 4 weeks to 1 September 2014:
- * var result = addWeeks(new Date(2014, 8, 1), 4)
+ * const result = addWeeks(new Date(2014, 8, 1), 4)
  * //=> Mon Sep 29 2014 00:00:00
  */
 
@@ -386,7 +389,7 @@ function addWeeks(dirtyDate, dirtyAmount) {
  *
  * @example
  * // Add 5 years to 1 September 2014:
- * var result = addYears(new Date(2014, 8, 1), 5)
+ * const result = addYears(new Date(2014, 8, 1), 5)
  * //=> Sun Sep 01 2019 00:00:00
  */
 
@@ -526,37 +529,6 @@ function differenceInCalendarMonths(dirtyDateLeft, dirtyDateRight) {
 }
 
 /**
- * @name startOfMonth
- * @category Month Helpers
- * @summary Return the start of a month for the given date.
- *
- * @description
- * Return the start of a month for the given date.
- * The result will be in the local timezone.
- *
- * ### v2.0.0 breaking changes:
- *
- * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
- *
- * @param {Date|Number} date - the original date
- * @returns {Date} the start of a month
- * @throws {TypeError} 1 argument required
- *
- * @example
- * // The start of a month for 2 September 2014 11:55:00:
- * var result = startOfMonth(new Date(2014, 8, 2, 11, 55, 0))
- * //=> Mon Sep 01 2014 00:00:00
- */
-
-function startOfMonth(dirtyDate) {
-  requiredArgs(1, arguments);
-  var date = toDate(dirtyDate);
-  date.setDate(1);
-  date.setHours(0, 0, 0, 0);
-  return date;
-}
-
-/**
  * @name endOfMonth
  * @category Month Helpers
  * @summary Return the end of a month for the given date.
@@ -575,7 +547,7 @@ function startOfMonth(dirtyDate) {
  *
  * @example
  * // The end of a month for 2 September 2014 11:55:00:
- * var result = endOfMonth(new Date(2014, 8, 2, 11, 55, 0))
+ * const result = endOfMonth(new Date(2014, 8, 2, 11, 55, 0))
  * //=> Tue Sep 30 2014 23:59:59.999
  */
 
@@ -585,6 +557,37 @@ function endOfMonth(dirtyDate) {
   var month = date.getMonth();
   date.setFullYear(date.getFullYear(), month + 1, 0);
   date.setHours(23, 59, 59, 999);
+  return date;
+}
+
+/**
+ * @name startOfMonth
+ * @category Month Helpers
+ * @summary Return the start of a month for the given date.
+ *
+ * @description
+ * Return the start of a month for the given date.
+ * The result will be in the local timezone.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} date - the original date
+ * @returns {Date} the start of a month
+ * @throws {TypeError} 1 argument required
+ *
+ * @example
+ * // The start of a month for 2 September 2014 11:55:00:
+ * const result = startOfMonth(new Date(2014, 8, 2, 11, 55, 0))
+ * //=> Mon Sep 01 2014 00:00:00
+ */
+
+function startOfMonth(dirtyDate) {
+  requiredArgs(1, arguments);
+  var date = toDate(dirtyDate);
+  date.setDate(1);
+  date.setHours(0, 0, 0, 0);
   return date;
 }
 
@@ -611,15 +614,14 @@ function endOfMonth(dirtyDate) {
  *
  * @example
  * // The end of a week for 2 September 2014 11:55:00:
- * var result = endOfWeek(new Date(2014, 8, 2, 11, 55, 0))
+ * const result = endOfWeek(new Date(2014, 8, 2, 11, 55, 0))
  * //=> Sat Sep 06 2014 23:59:59.999
  *
  * @example
  * // If the week starts on Monday, the end of the week for 2 September 2014 11:55:00:
- * var result = endOfWeek(new Date(2014, 8, 2, 11, 55, 0), { weekStartsOn: 1 })
+ * const result = endOfWeek(new Date(2014, 8, 2, 11, 55, 0), { weekStartsOn: 1 })
  * //=> Sun Sep 07 2014 23:59:59.999
  */
-
 function endOfWeek(dirtyDate, dirtyOptions) {
   requiredArgs(1, arguments);
   var options = dirtyOptions || {};
@@ -669,6 +671,14 @@ var formatDistanceLocale = {
   xDays: {
     one: '1 day',
     other: '{{count}} days'
+  },
+  aboutXWeeks: {
+    one: 'about 1 week',
+    other: 'about {{count}} weeks'
+  },
+  xWeeks: {
+    one: '1 week',
+    other: '{{count}} weeks'
   },
   aboutXMonths: {
     one: 'about 1 month',
@@ -987,11 +997,11 @@ function buildMatchFn(args) {
 
     if (Object.prototype.toString.call(parsePatterns) === '[object Array]') {
       value = findIndex(parsePatterns, function (pattern) {
-        return pattern.test(string);
+        return pattern.test(matchedString);
       });
     } else {
       value = findKey(parsePatterns, function (pattern) {
-        return pattern.test(string);
+        return pattern.test(matchedString);
       });
     }
 
@@ -1160,7 +1170,7 @@ var locale = {
  *
  * @example
  * // Subtract 750 milliseconds from 10 July 2014 12:45:30.000:
- * var result = subMilliseconds(new Date(2014, 6, 10, 12, 45, 30, 0), 750)
+ * const result = subMilliseconds(new Date(2014, 6, 10, 12, 45, 30, 0), 750)
  * //=> Thu Jul 10 2014 12:45:29.250
  */
 
@@ -1226,8 +1236,10 @@ var formatters = {
     switch (token) {
       case 'a':
       case 'aa':
-      case 'aaa':
         return dayPeriodEnumValue.toUpperCase();
+
+      case 'aaa':
+        return dayPeriodEnumValue;
 
       case 'aaaaa':
         return dayPeriodEnumValue[0];
@@ -1965,11 +1977,16 @@ var formatters$1 = {
     switch (token) {
       case 'a':
       case 'aa':
-      case 'aaa':
         return localize.dayPeriod(dayPeriodEnumValue, {
           width: 'abbreviated',
           context: 'formatting'
         });
+
+      case 'aaa':
+        return localize.dayPeriod(dayPeriodEnumValue, {
+          width: 'abbreviated',
+          context: 'formatting'
+        }).toLowerCase();
 
       case 'aaaaa':
         return localize.dayPeriod(dayPeriodEnumValue, {
@@ -2001,11 +2018,16 @@ var formatters$1 = {
     switch (token) {
       case 'b':
       case 'bb':
-      case 'bbb':
         return localize.dayPeriod(dayPeriodEnumValue, {
           width: 'abbreviated',
           context: 'formatting'
         });
+
+      case 'bbb':
+        return localize.dayPeriod(dayPeriodEnumValue, {
+          width: 'abbreviated',
+          context: 'formatting'
+        }).toLowerCase();
 
       case 'bbbbb':
         return localize.dayPeriod(dayPeriodEnumValue, {
@@ -2376,15 +2398,15 @@ function isProtectedDayOfYearToken(token) {
 function isProtectedWeekYearToken(token) {
   return protectedWeekYearTokens.indexOf(token) !== -1;
 }
-function throwProtectedError(token) {
+function throwProtectedError(token, format, input) {
   if (token === 'YYYY') {
-    throw new RangeError('Use `yyyy` instead of `YYYY` for formatting years; see: https://git.io/fxCyr');
+    throw new RangeError("Use `yyyy` instead of `YYYY` (in `".concat(format, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
   } else if (token === 'YY') {
-    throw new RangeError('Use `yy` instead of `YY` for formatting years; see: https://git.io/fxCyr');
+    throw new RangeError("Use `yy` instead of `YY` (in `".concat(format, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
   } else if (token === 'D') {
-    throw new RangeError('Use `d` instead of `D` for formatting days of the month; see: https://git.io/fxCyr');
+    throw new RangeError("Use `d` instead of `D` (in `".concat(format, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
   } else if (token === 'DD') {
-    throw new RangeError('Use `dd` instead of `DD` for formatting days of the month; see: https://git.io/fxCyr');
+    throw new RangeError("Use `dd` instead of `DD` (in `".concat(format, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
   }
 }
 
@@ -2491,35 +2513,37 @@ var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
  * |                                 | DD      | 01, 02, ..., 365, 366             | 9     |
  * |                                 | DDD     | 001, 002, ..., 365, 366           |       |
  * |                                 | DDDD    | ...                               | 3     |
- * | Day of week (formatting)        | E..EEE  | Mon, Tue, Wed, ..., Su            |       |
+ * | Day of week (formatting)        | E..EEE  | Mon, Tue, Wed, ..., Sun           |       |
  * |                                 | EEEE    | Monday, Tuesday, ..., Sunday      | 2     |
  * |                                 | EEEEE   | M, T, W, T, F, S, S               |       |
  * |                                 | EEEEEE  | Mo, Tu, We, Th, Fr, Su, Sa        |       |
  * | ISO day of week (formatting)    | i       | 1, 2, 3, ..., 7                   | 7     |
  * |                                 | io      | 1st, 2nd, ..., 7th                | 7     |
  * |                                 | ii      | 01, 02, ..., 07                   | 7     |
- * |                                 | iii     | Mon, Tue, Wed, ..., Su            | 7     |
+ * |                                 | iii     | Mon, Tue, Wed, ..., Sun           | 7     |
  * |                                 | iiii    | Monday, Tuesday, ..., Sunday      | 2,7   |
  * |                                 | iiiii   | M, T, W, T, F, S, S               | 7     |
  * |                                 | iiiiii  | Mo, Tu, We, Th, Fr, Su, Sa        | 7     |
  * | Local day of week (formatting)  | e       | 2, 3, 4, ..., 1                   |       |
  * |                                 | eo      | 2nd, 3rd, ..., 1st                | 7     |
  * |                                 | ee      | 02, 03, ..., 01                   |       |
- * |                                 | eee     | Mon, Tue, Wed, ..., Su            |       |
+ * |                                 | eee     | Mon, Tue, Wed, ..., Sun           |       |
  * |                                 | eeee    | Monday, Tuesday, ..., Sunday      | 2     |
  * |                                 | eeeee   | M, T, W, T, F, S, S               |       |
  * |                                 | eeeeee  | Mo, Tu, We, Th, Fr, Su, Sa        |       |
  * | Local day of week (stand-alone) | c       | 2, 3, 4, ..., 1                   |       |
  * |                                 | co      | 2nd, 3rd, ..., 1st                | 7     |
  * |                                 | cc      | 02, 03, ..., 01                   |       |
- * |                                 | ccc     | Mon, Tue, Wed, ..., Su            |       |
+ * |                                 | ccc     | Mon, Tue, Wed, ..., Sun           |       |
  * |                                 | cccc    | Monday, Tuesday, ..., Sunday      | 2     |
  * |                                 | ccccc   | M, T, W, T, F, S, S               |       |
  * |                                 | cccccc  | Mo, Tu, We, Th, Fr, Su, Sa        |       |
- * | AM, PM                          | a..aaa  | AM, PM                            |       |
+ * | AM, PM                          | a..aa   | AM, PM                            |       |
+ * |                                 | aaa     | am, pm                            |       |
  * |                                 | aaaa    | a.m., p.m.                        | 2     |
  * |                                 | aaaaa   | a, p                              |       |
- * | AM, PM, noon, midnight          | b..bbb  | AM, PM, noon, midnight            |       |
+ * | AM, PM, noon, midnight          | b..bb   | AM, PM, noon, midnight            |       |
+ * |                                 | bbb     | am, pm, noon, midnight            |       |
  * |                                 | bbbb    | a.m., p.m., noon, midnight        | 2     |
  * |                                 | bbbbb   | a, p, n, mi                       |       |
  * | Flexible day period             | B..BBB  | at night, in the morning, ...     |       |
@@ -2533,7 +2557,7 @@ var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
  * |                                 | HH      | 00, 01, 02, ..., 23               |       |
  * | Hour [0-11]                     | K       | 1, 2, ..., 11, 0                  |       |
  * |                                 | Ko      | 1st, 2nd, ..., 11th, 0th          | 7     |
- * |                                 | KK      | 1, 2, ..., 11, 0                  |       |
+ * |                                 | KK      | 01, 02, ..., 11, 00               |       |
  * | Hour [1-24]                     | k       | 24, 1, 2, ..., 23                 |       |
  * |                                 | ko      | 24th, 1st, 2nd, ..., 23rd         | 7     |
  * |                                 | kk      | 24, 01, 02, ..., 23               |       |
@@ -2545,7 +2569,7 @@ var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
  * |                                 | ss      | 00, 01, ..., 59                   |       |
  * | Fraction of second              | S       | 0, 1, ..., 9                      |       |
  * |                                 | SS      | 00, 01, ..., 99                   |       |
- * |                                 | SSS     | 000, 0001, ..., 999               |       |
+ * |                                 | SSS     | 000, 001, ..., 999                |       |
  * |                                 | SSSS    | ...                               | 3     |
  * | Timezone (ISO-8601 w/ Z)        | X       | -08, +0530, Z                     |       |
  * |                                 | XX      | -0800, +0530, Z                   |       |
@@ -2565,18 +2589,18 @@ var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
  * |                                 | tt      | ...                               | 3,7   |
  * | Milliseconds timestamp          | T       | 512969520900                      | 7     |
  * |                                 | TT      | ...                               | 3,7   |
- * | Long localized date             | P       | 05/29/1453                        | 7     |
- * |                                 | PP      | May 29, 1453                      | 7     |
- * |                                 | PPP     | May 29th, 1453                    | 7     |
- * |                                 | PPPP    | Sunday, May 29th, 1453            | 2,7   |
+ * | Long localized date             | P       | 04/29/1453                        | 7     |
+ * |                                 | PP      | Apr 29, 1453                      | 7     |
+ * |                                 | PPP     | April 29th, 1453                  | 7     |
+ * |                                 | PPPP    | Friday, April 29th, 1453          | 2,7   |
  * | Long localized time             | p       | 12:00 AM                          | 7     |
  * |                                 | pp      | 12:00:00 AM                       | 7     |
  * |                                 | ppp     | 12:00:00 AM GMT+2                 | 7     |
  * |                                 | pppp    | 12:00:00 AM GMT+02:00             | 2,7   |
- * | Combination of date and time    | Pp      | 05/29/1453, 12:00 AM              | 7     |
- * |                                 | PPpp    | May 29, 1453, 12:00:00 AM         | 7     |
- * |                                 | PPPppp  | May 29th, 1453 at ...             | 7     |
- * |                                 | PPPPpppp| Sunday, May 29th, 1453 at ...     | 2,7   |
+ * | Combination of date and time    | Pp      | 04/29/1453, 12:00 AM              | 7     |
+ * |                                 | PPpp    | Apr 29, 1453, 12:00:00 AM         | 7     |
+ * |                                 | PPPppp  | April 29th, 1453 at ...           | 7     |
+ * |                                 | PPPPpppp| Friday, April 29th, 1453 at ...   | 2,7   |
  * Notes:
  * 1. "Formatting" units (e.g. formatting quarter) in the default en-US locale
  *    are the same as "stand-alone" units, but are different in some languages.
@@ -2691,10 +2715,10 @@ var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
  * @throws {RangeError} `options.locale` must contain `formatLong` property
  * @throws {RangeError} `options.weekStartsOn` must be between 0 and 6
  * @throws {RangeError} `options.firstWeekContainsDate` must be between 1 and 7
- * @throws {RangeError} use `yyyy` instead of `YYYY` for formatting years; see: https://git.io/fxCyr
- * @throws {RangeError} use `yy` instead of `YY` for formatting years; see: https://git.io/fxCyr
- * @throws {RangeError} use `d` instead of `D` for formatting days of the month; see: https://git.io/fxCyr
- * @throws {RangeError} use `dd` instead of `DD` for formatting days of the month; see: https://git.io/fxCyr
+ * @throws {RangeError} use `yyyy` instead of `YYYY` for formatting years using [format provided] to the input [input provided]; see: https://git.io/fxCyr
+ * @throws {RangeError} use `yy` instead of `YY` for formatting years using [format provided] to the input [input provided]; see: https://git.io/fxCyr
+ * @throws {RangeError} use `d` instead of `D` for formatting days of the month using [format provided] to the input [input provided]; see: https://git.io/fxCyr
+ * @throws {RangeError} use `dd` instead of `DD` for formatting days of the month using [format provided] to the input [input provided]; see: https://git.io/fxCyr
  * @throws {RangeError} format string contains an unescaped latin alphabet character
  *
  * @example
@@ -2787,11 +2811,11 @@ function format(dirtyDate, dirtyFormatStr, dirtyOptions) {
 
     if (formatter) {
       if (!options.useAdditionalWeekYearTokens && isProtectedWeekYearToken(substring)) {
-        throwProtectedError(substring);
+        throwProtectedError(substring, dirtyFormatStr, dirtyDate);
       }
 
       if (!options.useAdditionalDayOfYearTokens && isProtectedDayOfYearToken(substring)) {
-        throwProtectedError(substring);
+        throwProtectedError(substring, dirtyFormatStr, dirtyDate);
       }
 
       return formatter(utcDate, substring, locale$1.localize, formatterOptions);
@@ -2828,7 +2852,7 @@ function cleanEscapedString(input) {
  *
  * @example
  * // Which day of the month is 29 February 2012?
- * var result = getDate(new Date(2012, 1, 29))
+ * const result = getDate(new Date(2012, 1, 29))
  * //=> 29
  */
 
@@ -2837,6 +2861,39 @@ function getDate(dirtyDate) {
   var date = toDate(dirtyDate);
   var dayOfMonth = date.getDate();
   return dayOfMonth;
+}
+
+/**
+ * @name getDaysInMonth
+ * @category Month Helpers
+ * @summary Get the number of days in a month of the given date.
+ *
+ * @description
+ * Get the number of days in a month of the given date.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} date - the given date
+ * @returns {Number} the number of days in a month
+ * @throws {TypeError} 1 argument required
+ *
+ * @example
+ * // How many days are in February 2000?
+ * const result = getDaysInMonth(new Date(2000, 1))
+ * //=> 29
+ */
+
+function getDaysInMonth(dirtyDate) {
+  requiredArgs(1, arguments);
+  var date = toDate(dirtyDate);
+  var year = date.getFullYear();
+  var monthIndex = date.getMonth();
+  var lastDayOfMonth = new Date(0);
+  lastDayOfMonth.setFullYear(year, monthIndex + 1, 0);
+  lastDayOfMonth.setHours(0, 0, 0, 0);
+  return lastDayOfMonth.getDate();
 }
 
 /**
@@ -2857,7 +2914,7 @@ function getDate(dirtyDate) {
  *
  * @example
  * // Which month is 29 February 2012?
- * var result = getMonth(new Date(2012, 1, 29))
+ * const result = getMonth(new Date(2012, 1, 29))
  * //=> 1
  */
 
@@ -2886,7 +2943,7 @@ function getMonth(dirtyDate) {
  *
  * @example
  * // Which year is 2 July 2014?
- * var result = getYear(new Date(2014, 6, 2))
+ * const result = getYear(new Date(2014, 6, 2))
  * //=> 2014
  */
 
@@ -3091,10 +3148,8 @@ function isToday(dirtyDate) {
  * // For date equal to interval end:
  * isWithinInterval(date, { start: date, end }) // => true
  */
-
-function isWithinInterval(dirtyDate, dirtyInterval) {
+function isWithinInterval(dirtyDate, interval) {
   requiredArgs(2, arguments);
-  var interval = dirtyInterval || {};
   var time = toDate(dirtyDate).getTime();
   var startTime = toDate(interval.start).getTime();
   var endTime = toDate(interval.end).getTime(); // Throw an exception if start date is after end date or if any date is `Invalid Date`
@@ -3163,7 +3218,7 @@ function max(dirtyDatesArray) {
   datesArray.forEach(function (dirtyDate) {
     var currentDate = toDate(dirtyDate);
 
-    if (result === undefined || result < currentDate || isNaN(currentDate)) {
+    if (result === undefined || result < currentDate || isNaN(Number(currentDate))) {
       result = currentDate;
     }
   });
@@ -3173,10 +3228,10 @@ function max(dirtyDatesArray) {
 /**
  * @name min
  * @category Common Helpers
- * @summary Return the earliest of the given dates.
+ * @summary Returns the earliest of the given dates.
  *
  * @description
- * Return the earliest of the given dates.
+ * Returns the earliest of the given dates.
  *
  * ### v2.0.0 breaking changes:
  *
@@ -3186,22 +3241,22 @@ function max(dirtyDatesArray) {
  *
  *   ```javascript
  *   // Before v2.0.0
- *   var date1 = new Date(1989, 6, 10)
- *   var date2 = new Date(1987, 1, 11)
- *   var minDate = min(date1, date2)
+ *   const date1 = new Date(1989, 6, 10)
+ *   const date2 = new Date(1987, 1, 11)
+ *   const minDate = min(date1, date2)
  *
  *   // v2.0.0 onward:
- *   var dates = [new Date(1989, 6, 10), new Date(1987, 1, 11)]
- *   var minDate = min(dates)
+ *   const dates = [new Date(1989, 6, 10), new Date(1987, 1, 11)]
+ *   const minDate = min(dates)
  *   ```
  *
  * @param {Date[]|Number[]} datesArray - the dates to compare
- * @returns {Date} the earliest of the dates
+ * @returns {Date} - the earliest of the dates
  * @throws {TypeError} 1 argument required
  *
  * @example
  * // Which of these dates is the earliest?
- * var result = min([
+ * const result = min([
  *   new Date(1989, 6, 10),
  *   new Date(1987, 1, 11),
  *   new Date(1995, 6, 2),
@@ -3227,7 +3282,7 @@ function min(dirtyDatesArray) {
   datesArray.forEach(function (dirtyDate) {
     var currentDate = toDate(dirtyDate);
 
-    if (result === undefined || result > currentDate || isNaN(currentDate)) {
+    if (result === undefined || result > currentDate || isNaN(currentDate.getDate())) {
       result = currentDate;
     }
   });
@@ -3253,7 +3308,7 @@ function min(dirtyDatesArray) {
  *
  * @example
  * // Set February to 1 September 2014:
- * var result = setMonth(new Date(2014, 8, 1), 1)
+ * const result = setMonth(new Date(2014, 8, 1), 1)
  * //=> Sat Feb 01 2014 00:00:00
  */
 
@@ -3292,7 +3347,7 @@ function setMonth(dirtyDate, dirtyMonth) {
  *
  * @example
  * // Set year 2013 to 1 September 2014:
- * var result = setYear(new Date(2014, 8, 1), 2013)
+ * const result = setYear(new Date(2014, 8, 1), 2013)
  * //=> Sun Sep 01 2013 00:00:00
  */
 
@@ -3301,7 +3356,7 @@ function setYear(dirtyDate, dirtyYear) {
   var date = toDate(dirtyDate);
   var year = toInteger(dirtyYear); // Check if date is Invalid Date because Date.prototype.setFullYear ignores the value of Invalid Date
 
-  if (isNaN(date)) {
+  if (isNaN(date.getTime())) {
     return new Date(NaN);
   }
 
@@ -3469,7 +3524,7 @@ var NavigationAction;
 
 var WEEK_DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 var styles$1 = function (_) {
-    return createStyles({
+    return createStyles$1({
         root: {
             width: 290
         },
@@ -3504,7 +3559,7 @@ var Month = function (props) {
                         !isWithinInterval(day, { start: minDate, end: maxDate }), startOfRange: isStart && !isRangeOneDay, endOfRange: isEnd && !isRangeOneDay, onClick: function () { return handlers.onDayClick(day); }, onHover: function () { return handlers.onDayHover(day); }, value: getDate(day) }));
             }))); })))));
 };
-var Month$1 = withStyles(styles$1)(Month);
+var Month$1 = withStyles$1(styles$1)(Month);
 
 var isSameRange = function (first, second) {
     var fStart = first.startDate, fEnd = first.endDate;
@@ -3548,9 +3603,10 @@ var styles$2 = function (theme) {
 };
 var Menu = function (props) {
     var classes = props.classes, ranges = props.ranges, dateRange = props.dateRange, minDate = props.minDate, maxDate = props.maxDate, firstMonth = props.firstMonth, setFirstMonth = props.setFirstMonth, secondMonth = props.secondMonth, setSecondMonth = props.setSecondMonth, setDateRange = props.setDateRange, helpers = props.helpers, handlers = props.handlers, translation = props.translation;
-    var translationText = __assign({
+    var translationProps = __assign({
         startDate: "Start Date",
-        endDate: "End Date"
+        endDate: "End Date",
+        dateFormat: "MMMM dd, yyyy",
     }, translation);
     var startDate = dateRange.startDate, endDate = dateRange.endDate;
     var canNavigateCloser = differenceInCalendarMonths(secondMonth, firstMonth) >= 2;
@@ -3560,16 +3616,16 @@ var Menu = function (props) {
             React__default.createElement(Grid, null,
                 React__default.createElement(Grid, { container: true, className: classes.header, alignItems: "center" },
                     React__default.createElement(Grid, { item: true, className: classes.headerItem },
-                        React__default.createElement(Typography, { variant: "subtitle1" }, startDate ? format(startDate, "MMMM dd, yyyy", { locale: translation === null || translation === void 0 ? void 0 : translation.locale }) : translationText === null || translationText === void 0 ? void 0 : translationText.startDate)),
+                        React__default.createElement(Typography, { variant: "subtitle1" }, startDate ? format(startDate, translationProps.dateFormat, { locale: translationProps === null || translationProps === void 0 ? void 0 : translationProps.locale }) : translationProps.startDate)),
                     React__default.createElement(Grid, { item: true, className: classes.headerItem },
                         React__default.createElement(ArrowRightAlt, { color: "action" })),
                     React__default.createElement(Grid, { item: true, className: classes.headerItem },
-                        React__default.createElement(Typography, { variant: "subtitle1" }, endDate ? format(endDate, "MMMM dd, yyyy", { locale: translation === null || translation === void 0 ? void 0 : translation.locale }) : translationText === null || translationText === void 0 ? void 0 : translationText.endDate))),
+                        React__default.createElement(Typography, { variant: "subtitle1" }, endDate ? format(endDate, translationProps.dateFormat, { locale: translationProps === null || translationProps === void 0 ? void 0 : translationProps.locale }) : translationProps.endDate))),
                 React__default.createElement(Divider, null),
                 React__default.createElement(Grid, { container: true, direction: "row", justify: "center", wrap: "nowrap" },
-                    React__default.createElement(Month$1, __assign({}, commonProps, { value: firstMonth, setValue: setFirstMonth, navState: [true, canNavigateCloser], marker: MARKERS.FIRST_MONTH, weekDays: translationText === null || translationText === void 0 ? void 0 : translationText.weekDays, months: translationText === null || translationText === void 0 ? void 0 : translationText.months })),
+                    React__default.createElement(Month$1, __assign({}, commonProps, { value: firstMonth, setValue: setFirstMonth, navState: [true, canNavigateCloser], marker: MARKERS.FIRST_MONTH, weekDays: translationProps === null || translationProps === void 0 ? void 0 : translationProps.weekDays, months: translationProps === null || translationProps === void 0 ? void 0 : translationProps.months })),
                     React__default.createElement("div", { className: classes.divider }),
-                    React__default.createElement(Month$1, __assign({}, commonProps, { value: secondMonth, setValue: setSecondMonth, navState: [canNavigateCloser, true], marker: MARKERS.SECOND_MONTH, weekDays: translationText === null || translationText === void 0 ? void 0 : translationText.weekDays, months: translationText === null || translationText === void 0 ? void 0 : translationText.months })))),
+                    React__default.createElement(Month$1, __assign({}, commonProps, { value: secondMonth, setValue: setSecondMonth, navState: [canNavigateCloser, true], marker: MARKERS.SECOND_MONTH, weekDays: translationProps === null || translationProps === void 0 ? void 0 : translationProps.weekDays, months: translationProps === null || translationProps === void 0 ? void 0 : translationProps.months })))),
             React__default.createElement("div", { className: classes.divider }),
             React__default.createElement(Grid, null,
                 React__default.createElement(DefinedRanges, { selectedRange: dateRange, ranges: ranges, setRange: setDateRange })))));
