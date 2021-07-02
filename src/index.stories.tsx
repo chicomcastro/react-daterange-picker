@@ -70,6 +70,7 @@ export const withTranslation = () => {
         months: ["JAN", "FER", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"],
         weekDays: ["DOM", "SEG", "TER", "QUAR", "QUIN", "SEX", "SAB"],
         locale: pt,
+        dateFormat: "dd 'de' MMMM 'de' yyyy"
       }}
       definedRanges={getDefaultRanges(new Date())}
     />

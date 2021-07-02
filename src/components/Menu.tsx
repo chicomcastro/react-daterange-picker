@@ -57,6 +57,7 @@ interface MenuProps extends WithStyles<typeof styles> {
     months?: [string, string, string, string, string, string, string, string, string, string, string, string];
     weekDays?: [string, string, string, string, string, string, string];
     locale?: object;
+    dateFormat?: string;
   }
 }
 
@@ -76,13 +77,18 @@ const Menu: React.FunctionComponent<MenuProps> = props => {
     handlers,
     translation,
   } = props;
-  const translationText = {
+  const translationProps: {
+    startDate: string,
+    endDate: string,
+    dateFormat: string,
+  } & MenuProps['translation'] = {
     ...{
       startDate: "Start Date",
-      endDate: "End Date"
+      endDate: "End Date",
+      dateFormat: "MMMM dd, yyyy",
     },
     ...translation,
-  } as MenuProps['translation'];
+  };
 
   const { startDate, endDate } = dateRange;
   const canNavigateCloser = differenceInCalendarMonths(secondMonth, firstMonth) >= 2;
@@ -94,7 +100,7 @@ const Menu: React.FunctionComponent<MenuProps> = props => {
           <Grid container className={classes.header} alignItems="center">
             <Grid item className={classes.headerItem}>
               <Typography variant="subtitle1">
-                {startDate ? format(startDate, "MMMM dd, yyyy", { locale: translation?.locale }) : translationText?.startDate as string}
+                {startDate ? format(startDate, translationProps.dateFormat, { locale: translationProps?.locale }) : translationProps.startDate as string}
               </Typography>
             </Grid>
             <Grid item className={classes.headerItem}>
@@ -102,7 +108,7 @@ const Menu: React.FunctionComponent<MenuProps> = props => {
             </Grid>
             <Grid item className={classes.headerItem}>
               <Typography variant="subtitle1">
-                {endDate ? format(endDate, "MMMM dd, yyyy", { locale: translation?.locale }) : translationText?.endDate as string}
+                {endDate ? format(endDate, translationProps.dateFormat, { locale: translationProps?.locale }) : translationProps.endDate as string}
               </Typography>
             </Grid>
           </Grid>
@@ -114,8 +120,8 @@ const Menu: React.FunctionComponent<MenuProps> = props => {
               setValue={setFirstMonth}
               navState={[true, canNavigateCloser]}
               marker={MARKERS.FIRST_MONTH}
-              weekDays={translationText?.weekDays}
-              months={translationText?.months}
+              weekDays={translationProps?.weekDays}
+              months={translationProps?.months}
             />
             <div className={classes.divider} />
             <Month
@@ -124,8 +130,8 @@ const Menu: React.FunctionComponent<MenuProps> = props => {
               setValue={setSecondMonth}
               navState={[canNavigateCloser, true]}
               marker={MARKERS.SECOND_MONTH}
-              weekDays={translationText?.weekDays}
-              months={translationText?.months}
+              weekDays={translationProps?.weekDays}
+              months={translationProps?.months}
             />
           </Grid>
         </Grid>
